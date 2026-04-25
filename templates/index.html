@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center text-center py-20">
+    
+    <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
+        Entrenamiento inteligente y seguro <br>
+        <span class="text-activa-blue">para mayores de 40</span>
+    </h1>
+    
+    <p class="text-xl text-gray-600 mb-10 max-w-2xl">
+        No dejes que el miedo a las lesiones detenga tu progreso. Nuestro Triage clínico te protege, mientras un Coach real adapta tus rutinas semana a semana.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row gap-4">
+        <a href="#" class="px-8 py-4 bg-activa-blue text-white rounded-lg font-semibold text-lg hover:bg-blue-800 transition duration-300 shadow-lg">
+            Quiero Entrenar (Cliente)
+        </a>
+        <a href="#" class="px-8 py-4 bg-white text-activa-blue border-2 border-activa-blue rounded-lg font-semibold text-lg hover:bg-gray-50 transition duration-300 shadow-md">
+            Soy Coach
+        </a>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left w-full max-w-4xl">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div class="text-activa-accent text-3xl mb-3">🛡️</div>
+            <h3 class="font-bold text-lg mb-2">Triage Clínico</h3>
+            <p class="text-gray-500 text-sm">Bloqueo automático de ejercicios lesivos basado en tu evaluación EVA.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div class="text-activa-accent text-3xl mb-3">👥</div>
+            <h3 class="font-bold text-lg mb-2">Match Perfecto</h3>
+            <p class="text-gray-500 text-sm">Entrenadores reales evaluando tu esfuerzo (RPE) post-sesión.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div class="text-activa-accent text-3xl mb-3">📈</div>
+            <h3 class="font-bold text-lg mb-2">Cero Abandono</h3>
+            <p class="text-gray-500 text-sm">Alertas tempranas para mantenerte motivado y fuera del "Valle de la Muerte".</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
