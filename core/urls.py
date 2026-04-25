@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import inicio
+from core.views import inicio, dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', inicio, name='inicio'),
+    path('dashboard/', dashboard, name='dashboard'),
 
     # Conectar todo el modulo de usuarios
     path('usuarios/', include('usuarios.urls')),
