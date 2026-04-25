@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-10">
+    <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-activa-accent">
+        
+        <div class="text-center mb-8">
+            <div class="text-5xl mb-4">🩺</div>
+            <h2 class="text-3xl font-bold text-gray-900">Evaluación de Triage</h2>
+            <p class="text-gray-500 mt-2">Tu seguridad es lo primero. Registra tus molestias para que el algoritmo adapte tu entrenamiento.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="bg-blue-50 p-4 rounded-lg flex items-start gap-3 mt-6">
+                <span class="text-activa-blue text-xl">ℹ️</span>
+                <p class="text-sm text-blue-800">Cualquier zona con un dolor EVA igual o superior a 4 bloqueará automáticamente los ejercicios de alto impacto asociados a esa área.</p>
+            </div>
+
+            <button type="submit" class="w-full bg-activa-accent text-white font-bold py-4 px-4 rounded-lg hover:bg-green-600 transition duration-300 shadow-lg text-lg mt-8">
+                Registrar Dolor y Proteger mi Rutina
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
