@@ -26,4 +26,7 @@ urlpatterns = [
     # Conectar todo el modulo de usuarios
     path('usuarios/', include('usuarios.urls')),
     path('triage/', include('triage.urls')),
+
+    # Conectar las rutinas
+    path('entrenamiento/', include('entrenamiento.urls')),
 ]
