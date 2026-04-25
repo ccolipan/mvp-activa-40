@@ -1,12 +1,11 @@
 from django.db import models
 from django.conf import settings
-from triage.models import Ejercicio
+from django.core.exceptions import ValidationError
+from triage.models import Ejercicio, Usuario_Restriccion, Contraindicacion
 
 class Rutina(models.Model):
-    # Conectamos quién entrena y quién lo supervisa
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rutinas_cliente')
-    coach = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='rutinas_coach')
-    
+    coach = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='rutinas_coach')
     fecha_asignacion = models.DateField(auto_now_add=True)
     completada = models.BooleanField(default=False)
 
@@ -18,7 +17,6 @@ class Rutina(models.Model):
         return f"Rutina de {self.usuario.first_name} - {self.fecha_asignacion}"
 
 class Detalle_Rutina(models.Model):
-    # Los ejercicios específicos dentro de una rutina
     rutina = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name='detalles')
     ejercicio = models.ForeignKey(Ejercicio, on_delete=models.CASCADE)
     series = models.IntegerField(default=3)
@@ -29,16 +27,31 @@ class Detalle_Rutina(models.Model):
         verbose_name = "Detalle de Rutina"
         verbose_name_plural = "Detalles de Rutina"
 
+    def clean(self):
+        super().clean()
+        
+        usuario_actual = self.rutina.usuario
+        dolores_riesgo = Usuario_Restriccion.objects.filter(usuario=usuario_actual, nivel_dolor_eva__gte=4)
+
+        for dolor in dolores_riesgo:
+            bloqueo_activo = Contraindicacion.objects.filter(
+                ejercicio=self.ejercicio,
+                restriccion=dolor.restriccion,
+                es_bloqueo_absoluto=True
+            ).exists()
+
+            if bloqueo_activo:
+                raise ValidationError(
+                    f"🛑 BLOQUEO DE TRIAGE: No puedes asignar '{self.ejercicio.nombre}'. "
+                    f"El cliente presenta dolor en: {dolor.restriccion.nombre} (EVA: {dolor.nivel_dolor_eva}/10)."
+                )
+
     def __str__(self):
         return f"{self.ejercicio.nombre} ({self.series}x{self.repeticiones})"
 
 class Evaluacion_PostSesion(models.Model):
-    # Feedback del usuario: Escala RPE (Rate of Perceived Exertion)
     rutina = models.OneToOneField(Rutina, on_delete=models.CASCADE)
-    esfuerzo_rpe = models.IntegerField(
-        choices=[(i, str(i)) for i in range(1, 11)], 
-        verbose_name="Esfuerzo Percibido (RPE 1-10)"
-    )
+    esfuerzo_rpe = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], verbose_name="Esfuerzo Percibido (RPE 1-10)")
     comentario_usuario = models.TextField(blank=True, null=True)
     fecha_evaluacion = models.DateTimeField(auto_now_add=True)
 
@@ -50,12 +63,9 @@ class Evaluacion_PostSesion(models.Model):
         return f"RPE: {self.esfuerzo_rpe} - {self.rutina.usuario.first_name}"
 
 class Alerta_Inactividad(models.Model):
-    # Sistema proactivo de retención
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dias_inactividad = models.IntegerField(choices=[(3, '3 Días'), (7, '7 Días'), (14, '14 Días')])
     fecha_disparo = models.DateTimeField(auto_now_add=True)
-    
-    # Checkbox para que el Coach marque que ya salvó a este usuario
     resuelta = models.BooleanField(default=False, verbose_name="¿Contactado por Coach?")
 
     class Meta:
