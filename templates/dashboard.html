@@ -41,19 +41,36 @@
 
                 <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
                     <h3 class="font-bold text-lg mb-3 flex justify-between">
-                        Rutinas en Curso
-                        <span class="bg-activa-blue text-white text-xs py-1 px-2 rounded-full">{{ rutinas_activas.count }}</span>
+                        Últimos Reportes (RPE)
+                        <span class="bg-activa-blue text-white text-xs py-1 px-2 rounded-full">{{ evaluaciones.count }}</span>
                     </h3>
-                    <p class="text-sm text-gray-500">Aquí verás a los clientes que estás supervisando actualmente.</p>
+                    {% if evaluaciones %}
+                        <ul class="space-y-3">
+                            {% for eval in evaluaciones %}
+                                <li class="text-sm bg-white p-4 rounded shadow-sm border-l-4 {% if eval.esfuerzo_rpe >= 8 %}border-red-500{% elif eval.esfuerzo_rpe >= 5 %}border-yellow-500{% else %}border-green-500{% endif %}">
+                                    <div class="flex justify-between mb-2">
+                                        <strong class="text-gray-800">{{ eval.rutina.usuario.first_name }}</strong>
+                                        <span class="font-bold {% if eval.esfuerzo_rpe >= 8 %}text-red-600{% elif eval.esfuerzo_rpe >= 5 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                                            RPE: {{ eval.esfuerzo_rpe }}/10
+                                        </span>
+                                    </div>
+                                    {% if eval.comentario_usuario %}
+                                        <p class="text-gray-600 italic text-xs bg-gray-50 p-2 rounded border border-gray-100">"{{ eval.comentario_usuario }}"</p>
+                                    {% endif %}
+                                    <p class="text-gray-400 text-[10px] mt-2 text-right">{{ eval.fecha_evaluacion|date:"d M Y" }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-sm text-gray-500">Aún no hay evaluaciones recientes de tus clientes.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
     {% elif user.es_cliente %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-activa-accent">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-                <span>🏋️‍♂️</span> Mi Entrenamiento
-            </h2>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>🏋️‍♂️</span> Mi Entrenamiento</h2>
             
             {% if mis_restricciones %}
                 <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6">
@@ -63,21 +80,19 @@
                             <li><strong>{{ restriccion.restriccion.nombre }}</strong> (Nivel de Dolor: {{ restriccion.nivel_dolor_eva }}/10)</li>
                         {% endfor %}
                     </ul>
-                    <p class="text-xs text-yellow-700 mt-2 mt-2">🛡️ Los ejercicios que impacten estas zonas están bloqueados.</p>
-                </div>
-            {% else %}
-                <div class="bg-green-50 border border-green-200 p-4 rounded-lg mb-6">
-                    <p class="text-green-800 text-sm"><strong>✓ Todo en orden:</strong> No has registrado molestias físicas recientes.</p>
                 </div>
             {% endif %}
 
-    {% if mis_rutinas %}
-        <a href="{% url 'mi_rutina' %}" class="inline-block text-center w-full md:w-auto bg-activa-accent hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow transition">
-            Comenzar Rutina de Hoy
-        </a>
-    {% else %}
-        <p class="text-gray-500 italic mt-4">Tu Coach está diseñando tu próxima rutina. ¡Te avisaremos pronto!</p>
-    {% endif %}
+            {% if mis_rutinas %}
+                <a href="{% url 'mi_rutina' %}" class="inline-block text-center w-full md:w-auto bg-activa-accent hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow transition">
+                    Comenzar Rutina de Hoy
+                </a>
+            {% else %}
+                <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl text-center">
+                    <p class="text-gray-600 font-semibold mb-1">¡Entrenamiento al día! 🎉</p>
+                    <p class="text-gray-500 text-sm">Tu Coach está evaluando tu último reporte para diseñar tu próxima rutina.</p>
+                </div>
+            {% endif %}
         </div>
 
     {% else %}

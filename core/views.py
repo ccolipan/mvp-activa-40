@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from triage.models import Usuario_Restriccion
-from entrenamiento.models import Rutina, Alerta_Inactividad
+from entrenamiento.models import Rutina, Alerta_Inactividad, Evaluacion_PostSesion
 
 def inicio(request):
     if request.user.is_authenticated:
@@ -17,6 +17,8 @@ def dashboard(request):
         # Si es coach, le mandamos las alertas pendientes
         context['alertas'] = Alerta_Inactividad.objects.filter(resuelta=False)
         context['rutinas_activas'] = Rutina.objects.filter(coach=request.user, completada=False)
+        # Se trae las ultimas evaluaciones, para que el Coach vea los RPE, se utiliza .all() par ver las pruebas
+        context['evaluaciones'] = Evaluacion_PostSesion.objects.all().order_by('-fecha_evaluacion')[:5]
         
     elif request.user.es_cliente:
         # Si es cliente, le mandamos sus dolores registrados y su rutina
