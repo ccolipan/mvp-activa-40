@@ -24,15 +24,36 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <nav class="bg-activa-blue text-white shadow-md">
+<nav class="bg-activa-blue text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2">
-                    <svg class="w-8 h-8 text-activa-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    <span class="font-bold text-xl tracking-tight">Activa+40</span>
+                    <a href="{% url 'inicio' %}" class="flex items-center gap-2 hover:opacity-80 transition">
+                        <svg class="w-8 h-8 text-activa-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span class="font-bold text-xl tracking-tight">Activa+40</span>
+                    </a>
                 </div>
-                <div>
-                    <span class="text-sm">MVP v0.0.1</span>
+                
+                <div class="flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-sm text-gray-200">
+                            Hola, <strong>{{ user.username }}</strong>
+                        </span>
+                        
+                        <form method="POST" action="{% url 'logout' %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md font-semibold transition shadow-sm">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-sm font-semibold hover:text-activa-accent transition">
+                            Iniciar Sesión
+                        </a>
+                        <a href="#" class="text-sm bg-activa-accent hover:bg-green-500 text-white px-4 py-2 rounded-md font-semibold transition shadow-sm">
+                            Registrarse
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
