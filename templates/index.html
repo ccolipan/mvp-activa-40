@@ -12,14 +12,14 @@
         No dejes que el miedo a las lesiones detenga tu progreso. Nuestro Triage clínico te protege, mientras un Coach real adapta tus rutinas semana a semana.
     </p>
     
-    <div class="flex flex-col sm:flex-row gap-4">
-        <a href="{% url 'registro' %}" class="px-8 py-4 bg-activa-blue text-white rounded-lg font-semibold text-lg hover:bg-blue-800 transition duration-300 shadow-lg">
-            Quiero Entrenar (Cliente)
-        </a>
-        <a href="#" class="px-8 py-4 bg-white text-activa-blue border-2 border-activa-blue rounded-lg font-semibold text-lg hover:bg-gray-50 transition duration-300 shadow-md">
-            Soy Coach
-        </a>
-    </div>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+    <a href="{% url 'registro' %}" class="px-8 py-4 bg-activa-blue text-white rounded-lg font-semibold text-lg hover:bg-blue-800 transition duration-300 shadow-lg w-full sm:w-auto text-center">
+        Quiero Entrenar (Cliente)
+    </a>
+    <a href="{% url 'registro_coach' %}" class="px-8 py-4 bg-white text-gray-800 border-2 border-gray-800 rounded-lg font-semibold text-lg hover:bg-gray-50 transition duration-300 w-full sm:w-auto text-center">
+        Soy Entrenador
+    </a>
+</div>
 
     <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left w-full max-w-4xl">
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-10">
+<div class="max-w-4xl mx-auto py-10 px-4">
     <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl border-t-4 border-activa-blue">
         
         <div class="text-center mb-10">
             <h2 class="text-3xl font-bold text-gray-900 mb-2">Comienza tu transformación</h2>
-            <p class="text-gray-500">Crea tu cuenta y completa tu evaluación física para que nuestro algoritmo de Triage te proteja desde el primer día.</p>
+            <p class="text-gray-500">Crea tu cuenta, cuéntanos tus objetivos y completa tu evaluación física para que nuestro algoritmo de Triage te proteja desde el primer día.</p>
         </div>
 
-        <form method="POST" class="space-y-8">
+        <form method="POST" class="space-y-10">
             {% csrf_token %}
             
             <div>
                 <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b pb-2">
-                    <span>👤</span> 1. Tus Datos
+                    <span>👤</span> 1. Identidad y Contacto
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -23,12 +23,25 @@
                         <span class="text-xs text-red-500">{{ form.username.errors }}</span>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tu Nombre Real</label>
-                        {{ form.first_name }}
-                    </div>
-                    <div class="md:col-span-2">
                         <label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label>
                         {{ form.email }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nombre</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Apellido</label>
+                        {{ form.last_name }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Fecha de Nacimiento (+40 años)</label>
+                        {{ form.fecha_nacimiento }}
+                        <span class="text-xs text-red-500">{{ form.fecha_nacimiento.errors }}</span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Teléfono (Opcional)</label>
+                        {{ form.telefono }}
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Contraseña</label>
@@ -38,14 +51,33 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Repetir Contraseña</label>
                         {{ form.password2 }}
-                        <span class="text-xs text-red-500">{{ form.password2.errors }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b pb-2">
+                    <span>🎯</span> 2. Tus Objetivos
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Tiempo Disponible</label>
+                        {{ form.tiempo_disponible }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Objetivo Principal</label>
+                        {{ form.objetivo_principal }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Lugar de Entrenamiento</label>
+                        {{ form.lugar_entrenamiento }}
                     </div>
                 </div>
             </div>
 
             <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
                 <h3 class="text-xl font-bold text-activa-blue mb-4 flex items-center gap-2">
-                    <span>🩺</span> 2. Evaluación Física (Triage)
+                    <span>🩺</span> 3. Evaluación Física (Triage Clínico)
                 </h3>
                 
                 <div class="space-y-6">
@@ -57,7 +89,6 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">{{ form.zona_afectada.label }}</label>
                         {{ form.zona_afectada }}
-                        <p class="text-xs text-gray-500 mt-1">Selecciona "Ninguna molestia" si te encuentras al 100%.</p>
                     </div>
 
                     <div class="bg-white p-4 rounded-lg shadow-sm">
@@ -71,6 +102,25 @@
                             <span>10 (Dolor Máximo)</span>
                         </div>
                     </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            {{ form.lesion_previa }}
+                            <label class="text-sm font-bold text-gray-700">{{ form.lesion_previa.label }}</label>
+                        </div>
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">{{ form.descripcion_lesion.label }} (Si marcaste 'Sí')</label>
+                            {{ form.descripcion_lesion }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                <div class="mt-1">{{ form.acepta_terminos }}</div>
+                <div>
+                    <label class="text-sm font-bold text-gray-800">{{ form.acepta_terminos.label }}</label>
+                    <p class="text-xs text-gray-500 mt-1">Declaro que la información médica proporcionada es verídica y acepto que el Coach adapte mi entrenamiento en base a ella.</p>
                 </div>
             </div>
 
@@ -81,4 +131,15 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Script para que el número del Slider EVA se actualice en tiempo real
+    const evaSlider = document.querySelector('input[name="nivel_dolor_eva"]');
+    const evaOutput = document.getElementById('eva-output');
+    if(evaSlider && evaOutput) {
+        evaSlider.addEventListener('input', function() {
+            evaOutput.textContent = this.value;
+        });
+    }
+</script>
 {% endblock %}

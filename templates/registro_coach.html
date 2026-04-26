@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-10">
+    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-xl border-t-4 border-gray-800">
+        
+        <div class="text-center mb-10">
+            <div class="text-5xl mb-4">👨‍🏫</div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Portal para Entrenadores</h2>
+            <p class="text-gray-500">Únete a la red de Activa+40. Diseña rutinas, monitorea el Triage Clínico y protege a tus clientes del Valle de la Muerte.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre de Usuario</label>
+                    {{ form.username }}
+                    <span class="text-xs text-red-500">{{ form.username.errors }}</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Tu Nombre Real</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico Profesional</label>
+                    {{ form.email }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Contraseña</label>
+                    {{ form.password1 }}
+                    <span class="text-xs text-red-500">{{ form.password1.errors }}</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Repetir Contraseña</label>
+                    {{ form.password2 }}
+                    <span class="text-xs text-red-500">{{ form.password2.errors }}</span>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-gray-800 text-white font-bold py-5 px-4 rounded-lg hover:bg-gray-900 transition duration-300 shadow-xl text-lg mt-8 flex justify-center items-center gap-2">
+                <span>📋</span> Crear Cuenta de Coach
+            </button>
+            
+        </form>
+    </div>
+</div>
+{% endblock %}
