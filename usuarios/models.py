@@ -5,6 +5,13 @@ class Usuario(AbstractUser):
     es_cliente = models.BooleanField(default=False)
     es_coach = models.BooleanField(default=False)
 
+    # --- Control de Coach --
+    ESTADO_COACH_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
+    estado_coach = models.CharField(max_length=20, choices=ESTADO_COACH_CHOICES, default='activo', verbose_name="Estado del Coach")
+
     # --- IDENTIDAD Y CONTACTO ---
     # El 'last_name' ya viene incluido en AbstractUser, así que no necesitamos crearlo.
     fecha_nacimiento = models.DateField(null=True, blank=True, verbose_name="Fecha de Nacimiento")

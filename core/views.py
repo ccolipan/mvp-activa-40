@@ -14,11 +14,15 @@ def dashboard(request):
     context = {}
     
     if request.user.es_coach:
-        # Si es coach, le mandamos las alertas pendientes
-        context['alertas'] = Alerta_Inactividad.objects.filter(resuelta=False)
+        # Filtramos alertas SOLO de los clientes que tienen asignado a este Coach, y que estén Pendientes
+        context['alertas'] = Alerta_Inactividad.objects.filter(
+            usuario__coach_asignado=request.user, 
+            estado_alerta='pendiente'
+        )
         context['rutinas_activas'] = Rutina.objects.filter(coach=request.user, completada=False)
-        # Se trae las ultimas evaluaciones, para que el Coach vea los RPE, se utiliza .all() par ver las pruebas
-        context['evaluaciones'] = Evaluacion_PostSesion.objects.all().order_by('-fecha_evaluacion')[:5]
+        context['evaluaciones'] = Evaluacion_PostSesion.objects.filter(
+            rutina__coach=request.user
+        ).order_by('-fecha_evaluacion')[:5]
         
     elif request.user.es_cliente:
         # Si es cliente, le mandamos sus dolores registrados y su rutina

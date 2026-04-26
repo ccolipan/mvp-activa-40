@@ -66,11 +66,19 @@ class Alerta_Inactividad(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dias_inactividad = models.IntegerField(choices=[(3, '3 Días'), (7, '7 Días'), (14, '14 Días')])
     fecha_disparo = models.DateTimeField(auto_now_add=True)
-    resuelta = models.BooleanField(default=False, verbose_name="¿Contactado por Coach?")
+
+    # --- Operación y trazabilidad ---
+    ESTADOS_ALERTA = [
+        ('pendiente', 'Pendiente'),
+        ('gestionada', 'Gestionada')
+    ]
+    estado_alerta = models.CharField(max_length=20, choices=ESTADOS_ALERTA, default='pendiente')
+    fecha_resolucion = models.DateTimeField(null=True, blank=True)
+    notas_auditoria = models.TextField(blank=True, null=True, verbose_name="Notas del Coach (Auditoría)")
 
     class Meta:
         verbose_name = "Alerta de Inactividad"
         verbose_name_plural = "Alertas de Inactividad"
 
     def __str__(self):
-        return f"ALERTA {self.dias_inactividad} días: {self.usuario.first_name}"
+        return f"ALERTA {self.dias_inactividad} días: {self.usuario.first_name} ({self.estado_alerta})"
