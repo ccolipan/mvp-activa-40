@@ -2,6 +2,35 @@
 
 {% block content %}
 <div class="max-w-5xl mx-auto py-10">
+
+    {% if messages %}
+        <div id="alertas-sistema" class="mb-6">
+            {% for message in messages %}
+                <div class="p-4 rounded-lg shadow-sm border-l-4 
+                    {% if message.tags == 'success' %}bg-green-50 border-green-500 text-green-800
+                    {% elif message.tags == 'error' %}bg-red-50 border-red-500 text-red-800
+                    {% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-500 text-yellow-800
+                    {% else %}bg-blue-50 border-blue-500 text-blue-800{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            // Oculta las alertas del sistema despues de 4 segundos
+            setTimeout(function() {
+                let alerta = document.getElementById('alertas-sistema');
+                if (alerta) {
+                    alerta.style.transition = 'opacity 0.5s ease-out';
+                    alerta.style.opacity = '0';
+                    setTimeout(function() { 
+                        alerta.style.display = 'none'; 
+                    }, 500);
+                }
+            }, 4000); 
+        </script>
+    {% endif %}
+
     <div class="mb-8 flex justify-between items-end">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Panel de Control</h1>
@@ -9,16 +38,26 @@
         </div>
         {% if user.es_cliente %}
             <a href="{% url 'registrar_triage' %}" class="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 font-semibold py-2 px-4 rounded-lg transition text-sm flex items-center gap-2">
-                <span>➕</span> Reportar Nueva Molestia
+                Reportar Nueva Molestia
             </a>
         {% endif %}
     </div>
-    
+
     {% if user.es_coach %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-activa-blue">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-                <span>👨‍🏫</span> Portal del Coach
-            </h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold flex items-center gap-2">
+                    Portal del Coach
+                </h2>
+                <div class="flex gap-3">
+                    <a href="#" class="bg-gray-400 text-white font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed">
+                        Gestionar Ejercicios (Parte 2)
+                    </a>
+                    <a href="{% url 'entrenamiento:crear_rutina_coach' %}" class="bg-activa-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition text-sm">
+                        Crear Nueva Rutina
+                    </a>
+                </div>
+            </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
@@ -30,18 +69,18 @@
                         <ul class="space-y-2">
                             {% for alerta in alertas %}
                                 <li class="text-sm bg-white p-3 rounded shadow-sm border-l-4 border-red-500">
-                                    <strong>{{ alerta.usuario.username }}</strong> - Ausente {{ alerta.dias_inactividad }} días
+                                    <strong>{{ alerta.usuario.username }}</strong> - Ausente {{ alerta.dias_inactividad }} dias
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-sm text-gray-500">No hay alertas de abandono pendientes. ¡Excelente retención!</p>
+                        <p class="text-sm text-gray-500">No hay alertas de abandono pendientes. Buena retencion.</p>
                     {% endif %}
                 </div>
 
                 <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
                     <h3 class="font-bold text-lg mb-3 flex justify-between">
-                        Últimos Reportes (RPE)
+                        Ultimos Reportes (RPE)
                         <span class="bg-activa-blue text-white text-xs py-1 px-2 rounded-full">{{ evaluaciones.count }}</span>
                     </h3>
                     {% if evaluaciones %}
@@ -62,19 +101,43 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-sm text-gray-500">Aún no hay evaluaciones recientes de tus clientes.</p>
+                        <p class="text-sm text-gray-500">Aun no hay evaluaciones recientes de tus clientes.</p>
                     {% endif %}
                 </div>
             </div>
-        </div>
 
+            <div class="border border-gray-200 rounded-xl p-5 bg-gray-50 mt-6">
+                <h3 class="font-bold text-lg mb-3 flex justify-between items-center">
+                    Mis Clientes Asignados
+                    <span class="bg-blue-900 text-white text-xs py-1 px-2 rounded-full">{{ clientes_asignados.count }}</span>
+                </h3>
+                {% if clientes_asignados %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for cliente in clientes_asignados %}
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex justify-between items-center">
+                                <div>
+                                    <p class="font-semibold text-gray-900">{{ cliente.first_name }} {{ cliente.last_name }}</p>
+                                    <p class="text-xs text-gray-500">{{ cliente.email }}</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded bg-green-50 text-green-700 border border-green-200 font-medium">
+                                    Activo
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-gray-500">No tienes clientes asignados en este momento.</p>
+                {% endif %}
+            </div>
+        </div>
+            
     {% elif user.es_cliente %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-activa-accent">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>🏋️‍♂️</span> Mi Entrenamiento</h2>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">Mi Entrenamiento</h2>
             
             {% if mis_restricciones %}
                 <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6">
-                    <h4 class="font-bold text-yellow-800 mb-2 text-sm uppercase tracking-wide">Tu Triage Clínico Activo:</h4>
+                    <h4 class="font-bold text-yellow-800 mb-2 text-sm uppercase tracking-wide">Tu Triage Clinico Activo:</h4>
                     <ul class="list-disc list-inside text-yellow-900 text-sm space-y-1">
                         {% for restriccion in mis_restricciones %}
                             <li><strong>{{ restriccion.restriccion.nombre }}</strong> (Nivel de Dolor: {{ restriccion.nivel_dolor_eva }}/10)</li>
@@ -89,15 +152,15 @@
                 </a>
             {% else %}
                 <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl text-center">
-                    <p class="text-gray-600 font-semibold mb-1">¡Entrenamiento al día! 🎉</p>
-                    <p class="text-gray-500 text-sm">Tu Coach está evaluando tu último reporte para diseñar tu próxima rutina.</p>
+                    <p class="text-gray-600 font-semibold mb-1">Entrenamiento al dia.</p>
+                    <p class="text-gray-500 text-sm">Tu Coach esta evaluando tu ultimo reporte para disenar tu proxima rutina.</p>
                 </div>
             {% endif %}
         </div>
 
     {% else %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-gray-500">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>⚙️</span> Portal Administrativo</h2>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">Portal Administrativo</h2>
             <a href="{% url 'admin:index' %}" class="inline-block bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg shadow transition">Ir a la Base de Datos (Admin)</a>
         </div>
     {% endif %}
