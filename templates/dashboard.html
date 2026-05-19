@@ -17,12 +17,14 @@
         </div>
 
         <script>
-            // Oculta las alertas del sistema despues de 4 segundos
+            // Esperamos 4 segundos (4000 milisegundos)
             setTimeout(function() {
                 let alerta = document.getElementById('alertas-sistema');
                 if (alerta) {
+                    // Aplicamos una transición suave de opacidad
                     alerta.style.transition = 'opacity 0.5s ease-out';
                     alerta.style.opacity = '0';
+                    // Esperamos medio segundo más para que termine la animación y lo quitamos del espacio
                     setTimeout(function() { 
                         alerta.style.display = 'none'; 
                     }, 500);
@@ -38,7 +40,7 @@
         </div>
         {% if user.es_cliente %}
             <a href="{% url 'registrar_triage' %}" class="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 font-semibold py-2 px-4 rounded-lg transition text-sm flex items-center gap-2">
-                Reportar Nueva Molestia
+                <span>➕</span> Reportar Nueva Molestia
             </a>
         {% endif %}
     </div>
@@ -50,8 +52,8 @@
                     Portal del Coach
                 </h2>
                 <div class="flex gap-3">
-                    <a href="#" class="bg-gray-400 text-white font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed">
-                        Gestionar Ejercicios (Parte 2)
+                    <a href="{% url 'añadir_ejercicio' %}" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg shadow-md transition text-sm">
+                        Gestionar Ejercicios
                     </a>
                     <a href="{% url 'entrenamiento:crear_rutina_coach' %}" class="bg-activa-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition text-sm">
                         Crear Nueva Rutina
@@ -69,18 +71,18 @@
                         <ul class="space-y-2">
                             {% for alerta in alertas %}
                                 <li class="text-sm bg-white p-3 rounded shadow-sm border-l-4 border-red-500">
-                                    <strong>{{ alerta.usuario.username }}</strong> - Ausente {{ alerta.dias_inactividad }} dias
+                                    <strong>{{ alerta.usuario.username }}</strong> - Ausente {{ alerta.dias_inactividad }} días
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-sm text-gray-500">No hay alertas de abandono pendientes. Buena retencion.</p>
+                        <p class="text-sm text-gray-500">No hay alertas de abandono pendientes. ¡Excelente retención!</p>
                     {% endif %}
                 </div>
 
                 <div class="border border-gray-200 rounded-xl p-5 bg-gray-50">
                     <h3 class="font-bold text-lg mb-3 flex justify-between">
-                        Ultimos Reportes (RPE)
+                        Últimos Reportes (RPE)
                         <span class="bg-activa-blue text-white text-xs py-1 px-2 rounded-full">{{ evaluaciones.count }}</span>
                     </h3>
                     {% if evaluaciones %}
@@ -101,7 +103,7 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-sm text-gray-500">Aun no hay evaluaciones recientes de tus clientes.</p>
+                        <p class="text-sm text-gray-500">Aún no hay evaluaciones recientes de tus clientes.</p>
                     {% endif %}
                 </div>
             </div>
@@ -129,15 +131,68 @@
                     <p class="text-sm text-gray-500">No tienes clientes asignados en este momento.</p>
                 {% endif %}
             </div>
+
+            <div class="border border-gray-200 rounded-xl p-5 bg-gray-50 mt-6">
+                <h3 class="font-bold text-lg mb-4 text-gray-800">
+                    Historial de Entrenamiento por Cliente
+                </h3>
+
+                {% regroup historial_rutinas by usuario as rutinas_por_usuario %}
+
+                {% if rutinas_por_usuario %}
+                    <div class="space-y-6">
+                        {% for grupo in rutinas_por_usuario %}
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                <div class="bg-blue-900 text-white px-4 py-3 font-semibold flex justify-between items-center">
+                                    <span>{{ grupo.grouper.first_name }} {{ grupo.grouper.last_name }}</span>
+                                    <span class="text-xs bg-blue-800 border border-blue-700 py-1 px-2 rounded-full">
+                                        {{ grupo.list|length }} Rutina(s)
+                                    </span>
+                                </div>
+                                
+                                <div class="p-4 space-y-4">
+                                    {% for rutina in grupo.list %}
+                                        <div class="border-l-4 {% if rutina.completada %}border-green-500{% else %}border-yellow-400{% endif %} pl-4 py-1">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="text-sm font-bold text-gray-700">
+                                                    Rutina del {{ rutina.fecha_asignacion|date:"d M Y" }}
+                                                </span>
+                                                <span class="text-xs font-semibold px-2 py-1 rounded {% if rutina.completada %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                                                    {% if rutina.completada %}Completada{% else %}Pendiente{% endif %}
+                                                </span>
+                                            </div>
+                                            
+                                            <ul class="text-sm text-gray-600 space-y-1">
+                                                {% for detalle in rutina.detalles.all %}
+                                                    <li>
+                                                        • <span class="font-medium text-gray-800">{{ detalle.ejercicio.nombre }}</span> 
+                                                        ({{ detalle.series }}x{{ detalle.repeticiones }}) 
+                                                        {% if detalle.peso_sugerido_kg %} - {{ detalle.peso_sugerido_kg }} kg{% endif %}
+                                                    </li>
+                                                {% empty %}
+                                                    <li class="italic text-gray-400">Sin ejercicios registrados.</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-gray-500">Aún no has asignado rutinas a tus clientes.</p>
+                {% endif %}
+            </div>
+
         </div>
             
     {% elif user.es_cliente %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-activa-accent">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">Mi Entrenamiento</h2>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>🏋️‍♂️</span> Mi Entrenamiento</h2>
             
             {% if mis_restricciones %}
                 <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6">
-                    <h4 class="font-bold text-yellow-800 mb-2 text-sm uppercase tracking-wide">Tu Triage Clinico Activo:</h4>
+                    <h4 class="font-bold text-yellow-800 mb-2 text-sm uppercase tracking-wide">Tu Triage Clínico Activo:</h4>
                     <ul class="list-disc list-inside text-yellow-900 text-sm space-y-1">
                         {% for restriccion in mis_restricciones %}
                             <li><strong>{{ restriccion.restriccion.nombre }}</strong> (Nivel de Dolor: {{ restriccion.nivel_dolor_eva }}/10)</li>
@@ -147,20 +202,20 @@
             {% endif %}
 
             {% if mis_rutinas %}
-                <a href="{% url 'mi_rutina' %}" class="inline-block text-center w-full md:w-auto bg-activa-accent hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow transition">
+                <a href="{% url 'entrenamiento:mi_rutina' %}" class="inline-block text-center w-full md:w-auto bg-activa-accent hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow transition">
                     Comenzar Rutina de Hoy
                 </a>
             {% else %}
                 <div class="bg-gray-50 border border-gray-200 p-6 rounded-xl text-center">
-                    <p class="text-gray-600 font-semibold mb-1">Entrenamiento al dia.</p>
-                    <p class="text-gray-500 text-sm">Tu Coach esta evaluando tu ultimo reporte para disenar tu proxima rutina.</p>
+                    <p class="text-gray-600 font-semibold mb-1">¡Entrenamiento al día! 🎉</p>
+                    <p class="text-gray-500 text-sm">Tu Coach está evaluando tu último reporte para diseñar tu próxima rutina.</p>
                 </div>
             {% endif %}
         </div>
 
     {% else %}
         <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-gray-500">
-            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">Portal Administrativo</h2>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2"><span>⚙️</span> Portal Administrativo</h2>
             <a href="{% url 'admin:index' %}" class="inline-block bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg shadow transition">Ir a la Base de Datos (Admin)</a>
         </div>
     {% endif %}

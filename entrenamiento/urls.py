@@ -9,4 +9,7 @@ urlpatterns = [
     
     # Nueva ruta para el portal del coach
     path('coach/crear-rutina/', views.crear_rutina_coach, name='crear_rutina_coach'),
+
+    # Nueva ruta para el cliente
+    path('mi-rutina/', views.mi_rutina, name='mi_rutina')
 ]

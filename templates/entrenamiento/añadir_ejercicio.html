@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-8 bg-white rounded-xl shadow-md mt-10 border-t-4 border-gray-700">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Añadir Nuevo Ejercicio</h2>
+    <p class="text-sm text-gray-500 mb-6">Este ejercicio estará disponible de inmediato al crear nuevas rutinas.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">{{ form.nombre.label }}</label>
+                {{ form.nombre }}
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1">{{ form.grupo_muscular.label }}</label>
+                {{ form.grupo_muscular }}
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-between items-center">
+            <a href="{% url 'dashboard' %}" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300 transition text-sm">
+                Cancelar
+            </a>
+            <button type="submit" class="px-5 py-2 bg-gray-800 text-white rounded-lg font-bold hover:bg-gray-900 shadow-md transition text-sm">
+                Guardar Ejercicio
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

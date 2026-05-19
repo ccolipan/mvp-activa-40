@@ -6,8 +6,16 @@ from django.contrib import messages
 
 @login_required
 def mi_rutina(request):
-    # Buscamos la rutina asignada a este usuario que aun no este completada
-    rutina = Rutina.objects.filter(usuario=request.user, completada=False).first()
+    # Seguridad: Solo clientes pueden ver esto
+    if not getattr(request.user, 'es_cliente', False):
+        return redirect('dashboard')
+
+    # Buscamos la rutina asignada optimizando la carga de ejercicios con prefetch_related
+    rutina = Rutina.objects.filter(usuario=request.user, completada=False).prefetch_related('detalles__ejercicio').first()
+    
+    if not rutina:
+        messages.info(request, 'No tienes rutinas pendientes.')
+        return redirect('dashboard')
     
     if request.method == 'POST':
         form = RPEForm(request.POST)
@@ -20,11 +28,12 @@ def mi_rutina(request):
             # Marcar la rutina como completada
             rutina.completada = True
             rutina.save()
+            messages.success(request, '¡Felicidades! Has completado tu entrenamiento de hoy.')
             return redirect('dashboard')
     else:
         form = RPEForm()
 
-    return render(request, 'rutina_activa.html', {
+    return render(request, 'entrenamiento/rutina_activa.html', {
         'rutina': rutina,
         'form': form
     })

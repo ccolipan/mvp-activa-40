@@ -27,8 +27,13 @@ def dashboard(request):
             rutina__coach=request.user
         ).order_by('-fecha_evaluacion')[:5]
         
-        # NUEVA CONSULTA: Obtener los usuarios registrados cuyo coach asignado sea el usuario en sesion
+        # Obtener los usuarios registrados cuyo coach asignado sea el usuario en sesion
         context['clientes_asignados'] = Usuario.objects.filter(coach_asignado=request.user)
+
+        # Historial completo agrupado por cliente
+        context['historial_rutinas'] = Rutina.objects.filter(
+            coach=request.user
+        ).select_related('usuario').prefetch_related('detalles__ejercicio').order_by('usuario__first_name', '-fecha_asignacion')
         
     elif request.user.es_cliente:
         # Si es cliente, enviamos sus restricciones y rutinas activas

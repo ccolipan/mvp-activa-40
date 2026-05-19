@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-activa-accent">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Mi Rutina de Hoy</h2>
+            <span class="bg-green-100 text-green-800 text-sm font-bold px-4 py-1 rounded-full border border-green-200 shadow-sm">
+                Asignada el {{ rutina.fecha_asignacion|date:"d M Y" }}
+            </span>
+        </div>
+
+        <div class="space-y-4 mb-8">
+            {% for detalle in rutina.detalles.all %}
+                <div class="flex items-center justify-between p-5 bg-gray-50 border border-gray-200 rounded-xl">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">{{ detalle.ejercicio.nombre }}</h3>
+                        <p class="text-sm text-gray-500 font-medium">Grupo Muscular: {{ detalle.ejercicio.grupo_muscular }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-black text-2xl text-gray-700">
+                            {{ detalle.series }} <span class="text-sm text-gray-500 font-normal">series</span> x 
+                            {{ detalle.repeticiones }} <span class="text-sm text-gray-500 font-normal">reps</span>
+                        </p>
+                        {% if detalle.peso_sugerido_kg %}
+                            <p class="text-xs font-bold text-green-700 border border-green-300 bg-green-50 rounded px-2 py-1 mt-1 inline-block">
+                                Peso sugerido: {{ detalle.peso_sugerido_kg }} kg
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 italic">No hay ejercicios registrados para esta rutina.</p>
+            {% endfor %}
+        </div>
+
+        <div class="mt-8 pt-8 border-t border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Finalizar Entrenamiento (RPE)</h3>
+            <form method="POST" class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Del 1 al 10, ¿Qué tan duro fue el entrenamiento?</label>
+                        {{ form.esfuerzo_rpe }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Comentarios para tu Coach (Opcional)</label>
+                        {{ form.comentario_usuario }}
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-6 pt-4">
+                    <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-gray-800 font-bold transition flex items-center gap-2">
+                        ← Cancelar
+                    </a>
+                    <button type="submit" class="bg-activa-accent hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                        Guardar y Finalizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
