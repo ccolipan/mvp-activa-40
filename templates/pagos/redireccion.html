@@ -1,0 +1,12 @@
+<html lang="es">
+<body onload="document.getElementById('form-pago').submit();" style="background-color: #f3f4f6;">
+    <div style="text-align: center; margin-top: 15%; font-family: system-ui, -apple-system, sans-serif;">
+        <h2 style="color: #1f2937;">Conectando de forma segura con Webpay...</h2>
+        <p style="color: #6b7280;">Por favor, no cierres ni recargues esta ventana.</p>
+    </div>
+    
+    <form id="form-pago" method="POST" action="{{ url }}">
+        <input type="hidden" name="token_ws" value="{{ token }}">
+    </form>
+</body>
+</html>

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'usuarios',
     'triage',
     'entrenamiento',
+    'pagos',
 ]
 
 MIDDLEWARE = [
@@ -120,6 +121,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# SEGURIDAD: Destruir las variables de sesión y tickets de pago si el usuario cierra el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
 LOGIN_REDIRECT_URL = 'dashboard'

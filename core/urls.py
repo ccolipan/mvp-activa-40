@@ -29,4 +29,7 @@ urlpatterns = [
 
     # Conectar las rutinas
     path('entrenamiento/', include('entrenamiento.urls')),
+
+    # Conectar al modulo de pasarela de pagos
+    path('pagos/', include('pagos.urls')),
 ]
